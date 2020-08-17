@@ -1,5 +1,7 @@
 package com.example.burgerfield;
 
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.*;
@@ -9,13 +11,8 @@ import org.springframework.stereotype.*;
 @SpringBootApplication
 public class BurgerMain {
 
-	@RequestMapping("/")
-	@ResponseBody
-	String home() {
-		return "Hello World xoxo";
-	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(BurgerMain.class, args);
+
 	}
 }
