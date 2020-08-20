@@ -11,6 +11,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
@@ -35,11 +36,14 @@ import java.util.List;
 public class MainView extends Div  {
 
     private MapLocationService service;
-
     private LeafletMap map;
+    BurgerParser burgerParser = new BurgerParser();
+    BurgerRecognition burgerRecognition = new BurgerRecognition();
+    List<Venue> burgerSpots = new ArrayList<>();
 
     @Autowired
     public MainView(MapLocationService service){
+
 
         VerticalLayout workspace = new VerticalLayout();
         workspace.setSizeFull();
@@ -58,7 +62,7 @@ public class MainView extends Div  {
 
 
         // Register for marker clicks
-        map.addMarkerClickListener(e -> Notification.show("User clicked on the marker " + e.getMarker().getName()));
+        map.addMarkerClickListener(e -> showPopup(getVenueByName(e.getMarker().getName())));
 
         // Register for clicks on the map itself
         //map.addMapClickListener(this::mapClicked);
@@ -86,12 +90,12 @@ public class MainView extends Div  {
             footer.setPadding(true);
 
 
-            header.add(new H3("Burgerfield v0.6"));
+            header.add(new H3("Burgerfield v0.65"));
             navBar.add(setUpNavBar(content, map));
             navBar.setWidth("300px");
 
         content.add(map);
-
+        showIntro();
 
 
         // Compose layout
@@ -103,19 +107,26 @@ public class MainView extends Div  {
 
     }
 
+    private Venue getVenueByName(String name) {
+        for (Venue burgerSpot : burgerSpots) {
+            if (burgerSpot.getName().equals(name)) return burgerSpot;
+        }
+        return null;
+    }
+
     private VerticalLayout setUpNavBar(VerticalLayout content, LeafletMap map) {
 
-        BurgerParser burgerParser = new BurgerParser();
-        BurgerRecognition burgerRecognition = new BurgerRecognition();
+
 
         VerticalLayout navBar = new VerticalLayout();
 
         String query = "burger";
 
+        burgerSpots = burgerParser.getBurgerspots(query);
 
-        for (Venue burgerSpot : burgerParser.getBurgerspots(query)) {
+        for (Venue burgerSpot : burgerSpots) {
+
             VerticalLayout venueLayout = new VerticalLayout();
-
 
             MapLocation spot = new MapLocation(burgerSpot.getLocation().getLat(), burgerSpot.getLocation().getLng(), burgerSpot.getName());
             service.addSpot(spot);
@@ -124,23 +135,7 @@ public class MainView extends Div  {
             Button venueButton = new Button(burgerSpot.getName(),  new Icon(VaadinIcon.ARROW_RIGHT),
 
                     event -> {
-                        content.removeAll();
-                        HorizontalLayout imageRow = new HorizontalLayout();
-                        List<String> imageLinks = new ArrayList<>();
-                        List<Item> images = burgerParser.getBurgerImageData(burgerSpot.getId());
-                        for (Item testImage : images) {
-                            String imageLinkString = testImage.getPrefix()+"200x200"+testImage.getSuffix();
-                            imageLinks.add(imageLinkString);
-                            Image image = new Image();
-                            image.setSrc(imageLinkString);
-                            imageRow.add(image);
-                        }
-                        try {
-                            burgerRecognition.postImages(imageLinks);
-                        } catch (URISyntaxException | JsonProcessingException e) {
-                            e.printStackTrace();
-                        }
-                        content.add(imageRow);
+                        showPopup(burgerSpot);
                     }
             );
             venueLayout.add(venueButton);
@@ -153,16 +148,67 @@ public class MainView extends Div  {
     }
 
     private void showIntro() {
-        H3 title = new H3("Welcome to the best fishing spots in the world!");
-        Span subtitle = new Span("You can add a marker by clicking anywhere on the map.");
+        H3 title = new H3("Welcome to the Burgerfield Tartu");
+        Span subtitle = new Span("You can find the newest burgers from your favourite burger spots by...");
+        Span subtitleA = new Span("a) Clicking on an icon on the map");
+        Span subtitleB = new Span("OR");
+        Span subtitleC = new Span("b) Clicking on the name in the navbar");
         Button ok = new Button("OK!", VaadinIcon.CHECK.create());
-        VerticalLayout titleLayout = new VerticalLayout(title, subtitle, ok);
+        VerticalLayout titleLayout = new VerticalLayout(title, subtitle, subtitleA, subtitleC, ok);
         titleLayout.setPadding(false);
 
         Dialog introDialog = new Dialog(titleLayout);
         introDialog.open();
 
         ok.addClickListener(e -> introDialog.close());
+    }
+
+    private void showPopup(Venue burgerSpot) {
+        H3 title = new H3(burgerSpot.getName());
+
+        HorizontalLayout imageRow = new HorizontalLayout();
+        List<String> imageLinks = new ArrayList<>();
+        List<Item> images = burgerParser.getBurgerImageData(burgerSpot.getId());
+        for (Item testImage : images) {
+            String imageLinkString = testImage.getPrefix()+"200x200"+testImage.getSuffix();
+            imageLinks.add(imageLinkString);
+            Image image = new Image();
+            image.setSrc(imageLinkString);
+            imageRow.add(image);
+        }
+
+        try {
+
+            burgerRecognition.postImages(imageLinks);
+
+        } catch (URISyntaxException | JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+
+        Button ok = new Button("OK!", VaadinIcon.CHECK.create());
+
+        if (imageLinks.size() == 0) {
+            Span subtitle = new Span("No new burgers...");
+            VerticalLayout titleLayout = new VerticalLayout(title, subtitle, ok);
+            titleLayout.setPadding(false);
+
+            Dialog popupDialog = new Dialog(titleLayout);
+            popupDialog.open();
+
+            ok.addClickListener(e -> popupDialog.close());
+        }
+        else {
+            VerticalLayout titleLayout = new VerticalLayout(title, imageRow, ok);
+            titleLayout.setPadding(false);
+
+            Dialog popupDialog = new Dialog(titleLayout);
+            popupDialog.open();
+
+            ok.addClickListener(e -> popupDialog.close());
+        }
+
+
     }
 
     /**
