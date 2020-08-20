@@ -15,7 +15,7 @@
 	<description>Burger service for the good folks at Qminder</description>
 
 	<properties>
-		<java.version>11</java.version>
+		<java.version>8</java.version>
 		<vaadin.version>14.3.3</vaadin.version>
 	</properties>
 
@@ -63,6 +63,16 @@
 			<version>0.0.20131108.vaadin1</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -77,8 +87,34 @@
 		</dependencies>
 	</dependencyManagement>
 
+
 	<build>
+		<defaultGoal>spring-boot:run</defaultGoal>
 		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<!-- Clean build and startup time for Vaadin apps sometimes may exceed
+                     the default Spring Boot's 30sec timeout.  -->
+				<configuration>
+					<wait>500</wait>
+					<maxAttempts>240</maxAttempts>
+				</configuration>
+			</plugin>
+
+
+			<plugin>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-maven-plugin</artifactId>
+				<version>${vaadin.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-frontend</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -99,10 +135,28 @@
 					</processTypes>
 				</configuration>
 			</plugin>
+
+
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+
+				<version>1.9.1</version>
+
+				<executions>
+					<execution>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<nodeVersion>v10.16.2</nodeVersion>
+
+				</configuration>
+			</plugin>
 		</plugins>
-
 	</build>
-
 
 	<profiles>
 		<profile>
@@ -114,7 +168,6 @@
 				<dependency>
 					<groupId>com.vaadin</groupId>
 					<artifactId>flow-server-production-mode</artifactId>
-					<version>2.3.4</version>
 				</dependency>
 			</dependencies>
 			<build>
