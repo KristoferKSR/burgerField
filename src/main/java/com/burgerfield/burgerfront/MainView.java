@@ -7,7 +7,10 @@ import com.burgerfield.objects.burgerphoto.Item;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
+import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.html.Image;
@@ -16,6 +19,9 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Page;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.Theme;
@@ -62,6 +68,7 @@ public class MainView extends Div {
         HorizontalLayout footer = new HorizontalLayout();
 
 
+
         // Configure layouts
         header.setWidth("100%");
         header.setPadding(true);
@@ -76,9 +83,28 @@ public class MainView extends Div {
         footer.setPadding(true);
 
 
-        header.add(new H3("Burgerfield v0.65"));
+
         navBar.add(setUpNavBar(content, map));
         navBar.setWidth("300px");
+
+
+        HorizontalLayout titleSpacer = new HorizontalLayout();
+        HorizontalLayout titleHeader = new HorizontalLayout();
+        HorizontalLayout spacingHeader = new HorizontalLayout();
+        HorizontalLayout refreshHeader = new HorizontalLayout();
+        titleSpacer.setWidth("2%");
+        titleHeader.setWidth("13%");
+        spacingHeader.setWidth("80%");
+        refreshHeader.setWidth("10%");
+        H3 mainheader = new H3("Burgerfield v0.65");
+        Button button = new Button("Refresh page");
+
+        button.addClickListener(event -> {
+            UI.getCurrent().getPage().reload();
+        });
+        titleHeader.add(mainheader);
+        refreshHeader.add(button);
+        header.add(titleSpacer, titleHeader, spacingHeader, refreshHeader);
 
         content.add(map);
         showIntro();
@@ -144,7 +170,6 @@ public class MainView extends Div {
     }
 
 
-
     private void showPopup(Venue burgerSpot) {
 
         H3 title = new H3(burgerSpot.getName());
@@ -153,12 +178,6 @@ public class MainView extends Div {
         List<String> imageLinks = new ArrayList<>();
         List<Item> images = burgerParser.getBurgerImageData(burgerSpot.getId());
         addImages(images, imageLinks, imageRow);
-
-        try {
-            burgerRecognizer.postImages(imageLinks);
-        } catch (URISyntaxException | JsonProcessingException e) {
-            e.printStackTrace();
-        }
 
 
         Button ok = new Button("OK!", VaadinIcon.CHECK.create());
@@ -176,13 +195,29 @@ public class MainView extends Div {
     }
 
     private void addImages(List<Item> images, List<String> imageLinks, HorizontalLayout imageRow) {
+
         for (Item testImage : images) {
             String imageLinkString = testImage.getPrefix() + "200x200" + testImage.getSuffix();
             imageLinks.add(imageLinkString);
-            Image image = new Image();
-            image.setSrc(imageLinkString);
-            imageRow.add(image);
         }
+        if (imageLinks.size() > 0) {
+            try {
+                String burgerImageLink = burgerRecognizer.postImages(imageLinks);
+                System.out.println("burgerimageLink: " + burgerImageLink);
+                if (burgerImageLink.contains("https")) {
+                    Image image = new Image();
+                    image.setSrc(burgerImageLink);
+                    imageRow.add(image);
+                }
+                else {
+                    Span subtitle = new Span("No new burgers...");
+                    imageRow.add(subtitle);
+                }
+            } catch (URISyntaxException | JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     private void mapClicked(LeafletMap.MapClickEvent event) {

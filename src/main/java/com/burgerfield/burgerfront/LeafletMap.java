@@ -62,6 +62,7 @@ public class LeafletMap extends PolymerTemplate<TemplateModel> implements HasSiz
     private static final String CUSTOM_LAYER_1 = "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png";
     private static final String CUSTOM_LAYER_2 = "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png";
     private static final String OPEN_STREET_MAP_ATTRIBUTION = "Qminder burger app";
+    private static final String HAS_BURGER_ICON = "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/burger-icon.png";
 
     /**
      * Internal helper when dealing with clicks on markers.
@@ -112,9 +113,10 @@ public class LeafletMap extends PolymerTemplate<TemplateModel> implements HasSiz
     public void addMarker(MapLocation spot) {
         // save id for later use in events
         idToMarker.put(nextMarkerId, spot);
+        String iconUrl = HAS_BURGER_ICON;
 
         // call client side to actually add marker
-        getElement().callJsFunction("addMarker", spot.getLatitude(), spot.getLongitude(), spot.getName(), nextMarkerId++);
+        getElement().callJsFunction("addMarker", spot.getLatitude(), spot.getLongitude(), spot.getName(), nextMarkerId++, iconUrl);
     }
 
     /**

@@ -121,10 +121,10 @@ class LeafletMap extends PolymerElement {
      * Adds a Marker to this map at the given coordinates and maps the id for future
      * click events.
      */
-    addMarker(latitude, longitude, markerText, markerId) {
+    addMarker(latitude, longitude, markerText, markerId, iconUrl) {
 
         // use default marker icons from Leaflet directly
-        let iconUrl = "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/burger-icon.png";
+
         let shadowUrl = "https://unpkg.com/leaflet@1.6.0/dist/images/marker-shadow.png";
         let myIcon = L.icon({
             iconUrl: iconUrl,

@@ -1,12 +1,19 @@
 package com.burgerfield.burgerJSON;
 
+import com.burgerfield.objects.burgervenue.Venue;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -20,15 +27,14 @@ public class BurgerRecognizer {
 
     private static final String API_URL = "https://pplkdijj76.execute-api.eu-west-1.amazonaws.com/prod/recognize";
 
-    public void postImages(List<String> imageUrls) throws URISyntaxException, JsonProcessingException {
+    public String postImages(List<String> imageUrls) throws URISyntaxException, JsonProcessingException {
 
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        try{
+        try {
 
-            Map<String,String> params = new LinkedHashMap<>();
+            Map<String, String> params = new LinkedHashMap<>();
             JSONArray urlArray = new JSONArray(imageUrls);
             params.put("\"urls\"", urlArray.toString());
 
@@ -42,12 +48,34 @@ public class BurgerRecognizer {
             OutputStreamWriter osw = new OutputStreamWriter(connection.getOutputStream());
             osw.write(correctParams);
             osw.flush();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String builtResponse = "";
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                builtResponse += line;
+            }
             osw.close();
-            System.err.println(connection.getResponseCode());
-            System.err.println(connection.getResponseMessage());
+            reader.close();
+            System.out.println(builtResponse);
+
+            try {
+                JSONObject json = new JSONObject(builtResponse);
+
+                System.err.println(connection.getResponseCode());
+                System.err.println(connection.getResponseMessage());
+
+                System.out.println("jsonstring");
+                System.out.println(json.get("urlWithBurger").toString());
+                return json.get("urlWithBurger").toString();
+
+            } catch (JSONException e) {
+                //e.printStackTrace();
+                return null;
+            }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            return "Burgerparse error, no burgers for you...";
         }
 
         // restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
