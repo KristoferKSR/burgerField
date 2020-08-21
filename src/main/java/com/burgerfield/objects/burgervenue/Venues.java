@@ -1,5 +1,5 @@
 
-package com.example.burgervenue;
+package com.burgerfield.objects.burgervenue;
 
 import java.util.HashMap;
 import java.util.List;

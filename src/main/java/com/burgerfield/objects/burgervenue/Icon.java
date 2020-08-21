@@ -1,5 +1,5 @@
 
-package com.example.burgerphoto;
+package com.burgerfield.objects.burgervenue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,36 +12,36 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "name",
-    "url"
+    "prefix",
+    "suffix"
 })
-public class Source {
+public class Icon {
 
-    @JsonProperty("name")
-    private String name;
-    @JsonProperty("url")
-    private String url;
+    @JsonProperty("prefix")
+    private String prefix;
+    @JsonProperty("suffix")
+    private String suffix;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("name")
-    public String getName() {
-        return name;
+    @JsonProperty("prefix")
+    public String getPrefix() {
+        return prefix;
     }
 
-    @JsonProperty("name")
-    public void setName(String name) {
-        this.name = name;
+    @JsonProperty("prefix")
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
-    @JsonProperty("url")
-    public String getUrl() {
-        return url;
+    @JsonProperty("suffix")
+    public String getSuffix() {
+        return suffix;
     }
 
-    @JsonProperty("url")
-    public void setUrl(String url) {
-        this.url = url;
+    @JsonProperty("suffix")
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
     }
 
     @JsonAnyGetter

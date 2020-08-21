@@ -1,4 +1,4 @@
-package com.example.burgerfront;
+package com.burgerfield.burgerfront;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,5 +1,5 @@
 
-package com.example.burgervenue;
+package com.burgerfield.objects.burgerphoto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "prefix",
     "suffix"
 })
-public class Icon {
+public class Photo {
 
     @JsonProperty("prefix")
     private String prefix;

@@ -1,4 +1,4 @@
-package com.example.burgerfront;
+package com.burgerfield.burgerfront;
 
 
 
@@ -16,12 +16,10 @@ import org.springframework.web.context.annotation.ApplicationScope;
 @ApplicationScope
 public class MapLocationService {
 
-    private List<MapLocation> spots = new ArrayList<MapLocation>();
+    private final List<MapLocation> spots = new ArrayList<MapLocation>();
 
     @PostConstruct
     private void init() {
-
-        // Add some demo data
 
         spots.add(new MapLocation(58.38062, 26.72509, "Hesburger"));
 
