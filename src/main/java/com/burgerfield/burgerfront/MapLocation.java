@@ -9,6 +9,22 @@ public class MapLocation {
     private double latitude;
     private double longitude;
     private String name;
+    boolean isBurgerSpot;
+
+    public MapLocation(double latitude, double longitude, String name, boolean isBurgerSpot) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.name = name;
+        this.isBurgerSpot = isBurgerSpot;
+    }
+
+    public boolean isBurgerSpot() {
+        return isBurgerSpot;
+    }
+
+    public void setBurgerSpot(boolean burgerSpot) {
+        isBurgerSpot = burgerSpot;
+    }
 
     public MapLocation() {
 

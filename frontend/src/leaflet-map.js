@@ -72,6 +72,7 @@ class LeafletMap extends PolymerElement {
                 this._mapClicked(mouseEvent);
             }
         );
+
     }
 
 
@@ -150,6 +151,7 @@ class LeafletMap extends PolymerElement {
         marker.addTo(this.map);
 
         this.markers.push(marker);
+
     }
 
     /**
@@ -161,6 +163,13 @@ class LeafletMap extends PolymerElement {
         });
     }
 
+    setMiddle() {
+        this.map.panTo(new L.LatLng(58.376123, 26.722198));
+    }
+
+    panToLocation(lat, long) {
+        this.map.flyTo(new L.LatLng(lat, long));
+    }
     /**
      * Internal method to dispatch an event to the server. We only send the marker id.
      */

@@ -63,7 +63,7 @@ public class BurgerParser {
 
     public List<Venue> getBurgerspots(String query) {
         String date = getDate();
-        final String uri = "https://api.foursquare.com/v2/venues/search?client_id=HWDO2NOD0GHFABK5DP5CL2JZNBD422RDEWOU1HMWNH2I5NTJ&client_secret=2VMJAR1GIOHL5JILAMQ4QNKOVXLE4BJEV1EZ254LRG0MGH4C&v=" + date + "&limit=1000&ll=58.3, 26.7&query=" + query;
+        final String uri = "https://api.foursquare.com/v2/venues/search?client_id=HWDO2NOD0GHFABK5DP5CL2JZNBD422RDEWOU1HMWNH2I5NTJ&client_secret=2VMJAR1GIOHL5JILAMQ4QNKOVXLE4BJEV1EZ254LRG0MGH4C&v=" + date + "&limit=1000&ll=58.38, 26.73&query=" + query;
         RestTemplate restTemplate = new RestTemplate();
         String result = restTemplate.getForObject(uri, String.class);
 

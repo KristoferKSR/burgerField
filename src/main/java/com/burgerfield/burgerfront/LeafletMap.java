@@ -63,6 +63,8 @@ public class LeafletMap extends PolymerTemplate<TemplateModel> implements HasSiz
     private static final String CUSTOM_LAYER_2 = "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png";
     private static final String OPEN_STREET_MAP_ATTRIBUTION = "Qminder burger app";
     private static final String HAS_BURGER_ICON = "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/burger-icon.png";
+    private static final String HAS_OTHER_ICON = "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/tacos-icon.png";
+
 
     /**
      * Internal helper when dealing with clicks on markers.
@@ -95,7 +97,9 @@ public class LeafletMap extends PolymerTemplate<TemplateModel> implements HasSiz
     public void addMarkersAndZoom(List<MapLocation> spots) {
 
         // Add all
-        spots.forEach(this::addMarker);
+        for (MapLocation spot : spots) {
+            addMarker(spot, spot.isBurgerSpot);
+        }
 
         // find top left and bottom right, then zoom the map
         double lat1 = spots.stream().map(s -> s.getLatitude()).min(Double::compare).orElse(0d);
@@ -107,13 +111,29 @@ public class LeafletMap extends PolymerTemplate<TemplateModel> implements HasSiz
         fitBounds(lat1, long1, lat2, long2);
     }
 
+    public void removeMarkers() {
+        getElement().callJsFunction("removeAllMarkers");
+    }
+
+    public void setMiddle() {
+        getElement().callJsFunction("setMiddle");
+    }
+
+    public void panToLocation(MapLocation spot) {
+        double lat = spot.getLatitude();
+        double lon = spot.getLongitude();
+        getElement().callJsFunction("panToLocation", String.valueOf(lat), String.valueOf(lon));
+    }
     /**
      * Add a marker to the map.
      */
-    public void addMarker(MapLocation spot) {
+    public void addMarker(MapLocation spot, boolean isBurgerSpot) {
         // save id for later use in events
         idToMarker.put(nextMarkerId, spot);
         String iconUrl = HAS_BURGER_ICON;
+        if (isBurgerSpot) iconUrl = HAS_BURGER_ICON;
+        if (!isBurgerSpot) iconUrl = HAS_OTHER_ICON;
+
 
         // call client side to actually add marker
         getElement().callJsFunction("addMarker", spot.getLatitude(), spot.getLongitude(), spot.getName(), nextMarkerId++, iconUrl);
