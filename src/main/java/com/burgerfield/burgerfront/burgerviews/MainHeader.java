@@ -32,24 +32,24 @@ public class MainHeader extends HorizontalLayout {
     }
 
 
-    void setUpHeader(MainView mainView) {
+    void setUpHeader(MainView mainView, boolean isSetToTallinn) {
 
         HorizontalLayout titleSpacer = new HorizontalLayout();
         HorizontalLayout titleHeader = new HorizontalLayout();
         HorizontalLayout spacingHeader = new HorizontalLayout();
-        HorizontalLayout checkBoxHeader = setCheckboxes(mainView);
+        HorizontalLayout checkBoxHeader = setCheckboxes(mainView, isSetToTallinn);
         titleSpacer.setWidth("1%");
         titleHeader.setWidth("12%");
-        spacingHeader.setWidth("69%");
-        checkBoxHeader.setWidth("18%");
-        H3 mainTitle = new H3("Burgerfield v0.7");
+        spacingHeader.setWidth("67%");
+        checkBoxHeader.setWidth("20%");
+        H3 mainTitle = new H3("Burgerfield v0.9");
 
 
         titleHeader.add(mainTitle);
         add(titleSpacer, titleHeader, spacingHeader, checkBoxHeader);
     }
 
-    HorizontalLayout setCheckboxes(MainView mainView) {
+    HorizontalLayout setCheckboxes(MainView mainView, boolean isSetToTallinn) {
 
         HorizontalLayout checkBoxHolder = new HorizontalLayout();
         Checkbox burgerSpotCheckbox = new Checkbox();

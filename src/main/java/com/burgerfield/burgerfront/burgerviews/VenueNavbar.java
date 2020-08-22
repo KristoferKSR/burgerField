@@ -20,6 +20,9 @@ public class VenueNavbar extends VerticalLayout {
 
     public VenueNavbar(MapLocationService service) {
         this.service = service;
+        this.setMaxHeight("800px");
+        this.getStyle().set("overflow-y", "auto");
+
     }
 
     void setUpNavBar(LeafletMap map, List<Venue> burgerSpots, MainView mainView) {

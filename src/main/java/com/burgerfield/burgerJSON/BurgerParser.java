@@ -17,6 +17,9 @@ import java.util.Objects;
 
 public class BurgerParser {
 
+    private static final String TARTU_COORDS = "58.38, 26.73";
+    private static final String TALLINN_COORDS = "59.43, 24.75";
+
     public List<Item> getBurgerImageData(String id) {
 
         String date = getDate();
@@ -63,7 +66,7 @@ public class BurgerParser {
 
     public List<Venue> getBurgerspots(String query) {
         String date = getDate();
-        final String uri = "https://api.foursquare.com/v2/venues/search?client_id=HWDO2NOD0GHFABK5DP5CL2JZNBD422RDEWOU1HMWNH2I5NTJ&client_secret=2VMJAR1GIOHL5JILAMQ4QNKOVXLE4BJEV1EZ254LRG0MGH4C&v=" + date + "&limit=1000&ll=58.38, 26.73&query=" + query;
+        final String uri = "https://api.foursquare.com/v2/venues/search?client_id=HWDO2NOD0GHFABK5DP5CL2JZNBD422RDEWOU1HMWNH2I5NTJ&client_secret=2VMJAR1GIOHL5JILAMQ4QNKOVXLE4BJEV1EZ254LRG0MGH4C&v=" + date + "&limit=1000&ll="+TARTU_COORDS+"&query=" + query;
         RestTemplate restTemplate = new RestTemplate();
         String result = restTemplate.getForObject(uri, String.class);
 
@@ -89,5 +92,14 @@ public class BurgerParser {
             return null;
         }
 
+    }
+
+    public List<Venue> getTallinnBurgerSpots(String query) {
+        String date = getDate();
+        final String uri = "https://api.foursquare.com/v2/venues/search?client_id=HWDO2NOD0GHFABK5DP5CL2JZNBD422RDEWOU1HMWNH2I5NTJ&client_secret=2VMJAR1GIOHL5JILAMQ4QNKOVXLE4BJEV1EZ254LRG0MGH4C&v=" + date + "&limit=1000&ll="+TALLINN_COORDS+"&query=" + query;
+        RestTemplate restTemplate = new RestTemplate();
+        String result = restTemplate.getForObject(uri, String.class);
+
+        return tokenizeVenues(result);
     }
 }

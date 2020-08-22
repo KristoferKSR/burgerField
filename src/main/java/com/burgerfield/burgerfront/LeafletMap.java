@@ -185,6 +185,15 @@ public class LeafletMap extends PolymerTemplate<TemplateModel> implements HasSiz
         return addListener(MarkerClickEvent.class, listener);
     }
 
+    public void setDarkMode() {
+        getElement().callJsFunction("addTileLayer", CUSTOM_LAYER_1, OPEN_STREET_MAP_ATTRIBUTION);
+    }
+
+    public void setLightMode() {
+        getElement().callJsFunction("addTileLayer", CUSTOM_LAYER_2, OPEN_STREET_MAP_ATTRIBUTION);
+
+    }
+
     /**
      * Listener for user clicks on a {@link MapLocation}
      * <p>

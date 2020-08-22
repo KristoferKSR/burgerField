@@ -12,25 +12,14 @@ import com.burgerfield.objects.burgerphoto.Item;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.CheckboxGroup;
-import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.Page;
-import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
-import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.Theme;
-import com.vaadin.flow.theme.lumo.Lumo;
 import com.vaadin.flow.theme.material.Material;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -52,6 +41,8 @@ public class MainView extends Div {
     LeafletMap map;
     VerticalLayout content;
     HorizontalLayout center;
+    boolean light = true;
+    boolean isSetToTallinn = false;
 
     public void setBurgerSpots(List<Venue> burgerSpots) {
         this.burgerSpots = burgerSpots;
@@ -63,7 +54,6 @@ public class MainView extends Div {
         this.service = service;
         VerticalLayout workspace = new VerticalLayout();
         workspace.setSizeFull();
-        setSizeFull();
 
         // Create the map and add it to this view
         map = new LeafletMap();
@@ -75,7 +65,7 @@ public class MainView extends Div {
         map.addMarkersAndZoom(service.getAll());
 
         MainHeader mainHeader = new MainHeader();
-        mainHeader.setUpHeader(this);
+        mainHeader.setUpHeader(this, isSetToTallinn);
         mainHeader.setPadding(true);
         mainHeader.setWidth("100%");
         mainHeader.setHeight("100px");
@@ -95,7 +85,6 @@ public class MainView extends Div {
 
         content.setWidth("100%");
         footer.setWidth("100%");
-        footer.setPadding(true);
 
         // Compose layout
         center.setFlexGrow(1, venueNavbar);
@@ -103,9 +92,78 @@ public class MainView extends Div {
         showIntro();
         add(workspace);
 
-        ThemeList themeList = UI.getCurrent().getElement().getThemeList();
-        themeList.set(Lumo.LIGHT, true);
+        Button darkModeButton = new Button("Switch to dark mode");
+        Button tallinnButton = new Button("Try tallinn?");
+        HorizontalLayout footerSpacer = new HorizontalLayout();
+        HorizontalLayout footerMiddleSpacer = new HorizontalLayout();
+        footerSpacer.setWidth("1%");
+        footerMiddleSpacer.setWidth("80%");
+        footer.add(footerSpacer, darkModeButton, footerMiddleSpacer, tallinnButton);
 
+        darkModeButton.addClickListener(e -> {
+            if (light) {
+                light = false;
+                darkModeButton.setText("Switch to light mode");
+            } else {
+                light = true;
+                darkModeButton.setText("Switch to dark mode");
+            }
+            setVisualStyle(light, footer, workspace, venueNavbar, mainHeader);
+
+        });
+
+        tallinnButton.addClickListener(e -> {
+
+            if (!isSetToTallinn) {
+                MapLocation tallinnLocation = new MapLocation(59.436962, 24.753574, "Tallinn");
+                map.panToLocation(tallinnLocation);
+                switchToTallinn();
+                tallinnButton.setText("Go back");
+            }
+            else {
+                MapLocation tartuLocation = new MapLocation(58.378025, 26.728493, "Tallinn");
+                switchToTartu();
+                map.panToLocation(tartuLocation);
+                tallinnButton.setText("Try Tallinn?");
+
+            }
+        });
+        setVisualStyle(light, footer, workspace, venueNavbar, mainHeader);
+    }
+
+    private void switchToTallinn() {
+        isSetToTallinn = true;
+
+        refreshWithNewData(true, false);
+    }
+    private void switchToTartu() {
+        isSetToTallinn = false;
+
+        refreshWithNewData(true, false);
+    }
+
+    private void setVisualStyle(boolean light, HorizontalLayout footer, VerticalLayout workspace, VenueNavbar venueNavbar, MainHeader header) {
+        ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+
+        if (light) {
+
+            footer.getStyle().set("background-color", "#ffffff");
+            workspace.getStyle().set("background-color", "#ffffff");
+            themeList.set(Material.LIGHT, true);
+            themeList.set(Material.DARK, false);
+            map.setDarkMode();
+
+        } else {
+
+            footer.getStyle().set("background-color", "#0d0d0d");
+            workspace.getStyle().set("background-color", "#0d0d0d");
+            themeList.set(Material.DARK, true);
+            themeList.set(Material.LIGHT, false);
+            map.setLightMode();
+
+        }
+        workspace.getStyle().set("font-family", "Courier");
+        venueNavbar.getElement().getStyle().set("font-family", "Courier");
     }
 
     private Venue getVenueByName(String name) {
@@ -184,18 +242,32 @@ public class MainView extends Div {
         venueNavbar = new VenueNavbar(service);
         burgerSpots = new ArrayList<>();
 
-        if (showBurgers && showRestaurants) {
-            List<Venue> allSpots = new ArrayList<>();
-            allSpots.addAll(burgerParser.getBurgerspots(BURGER_QUERY));
-            allSpots.addAll(burgerParser.getBurgerspots(RESTAURANT_QUERY));
-            burgerSpots = allSpots;
-        }
-        if (showBurgers && !showRestaurants) burgerSpots = burgerParser.getBurgerspots(BURGER_QUERY);
-        if (showRestaurants && !showBurgers)  burgerSpots = burgerParser.getBurgerspots(RESTAURANT_QUERY);
+        if (isSetToTallinn) {
+            if (showBurgers && showRestaurants) {
+                List<Venue> allSpots = new ArrayList<>();
+                allSpots.addAll(burgerParser.getTallinnBurgerSpots(BURGER_QUERY));
+               // allSpots.addAll(burgerParser.getTallinnBurgerSpots(RESTAURANT_QUERY));
+                burgerSpots = allSpots;
+            }
+            if (showBurgers && !showRestaurants) burgerSpots = burgerParser.getTallinnBurgerSpots(BURGER_QUERY);
+            //if (showRestaurants && !showBurgers) burgerSpots = burgerParser.getTallinnBurgerSpots(RESTAURANT_QUERY);
 
-        map.setMiddle();
+
+        }
+        else {
+            if (showBurgers && showRestaurants) {
+                List<Venue> allSpots = new ArrayList<>();
+                allSpots.addAll(burgerParser.getBurgerspots(BURGER_QUERY));
+                allSpots.addAll(burgerParser.getBurgerspots(RESTAURANT_QUERY));
+                burgerSpots = allSpots;
+            }
+            if (showBurgers && !showRestaurants) burgerSpots = burgerParser.getBurgerspots(BURGER_QUERY);
+            if (showRestaurants && !showBurgers) burgerSpots = burgerParser.getBurgerspots(RESTAURANT_QUERY);
+        }
+
+       // if (!isSetToTallinn) map.setMiddle();
         venueNavbar.setUpNavBar(map, burgerSpots, this);
-        venueNavbar.setWidth("300px");
+        venueNavbar.setWidth("365px");
         venueNavbar.setMaxHeight("800px");
         center.add(venueNavbar, content);
         center.setMaxHeight("800px");
