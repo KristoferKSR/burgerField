@@ -8,6 +8,7 @@ import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 import java.util.Arrays;
@@ -15,12 +16,26 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class MainHeader extends HorizontalLayout {
+public class SiteHeader extends HorizontalLayout {
 
     boolean showBurgers;
     boolean showRestaurants;
+    H3 mainTitle;
+    HorizontalLayout titleHeader;
 
-    public MainHeader() {
+    public void setTitleHeader(HorizontalLayout titleHeader) {
+        this.titleHeader = titleHeader;
+    }
+
+    public H3 getMainTitle() {
+        return mainTitle;
+    }
+
+    public void setMainTitle(H3 mainTitle) {
+        this.mainTitle = mainTitle;
+    }
+
+    public SiteHeader() {
 
     }
 
@@ -35,15 +50,18 @@ public class MainHeader extends HorizontalLayout {
     void setUpHeader(MainView mainView, boolean isSetToTallinn) {
 
         HorizontalLayout titleSpacer = new HorizontalLayout();
-        HorizontalLayout titleHeader = new HorizontalLayout();
+        titleHeader = new HorizontalLayout();
         HorizontalLayout spacingHeader = new HorizontalLayout();
         HorizontalLayout checkBoxHeader = setCheckboxes(mainView, isSetToTallinn);
-        titleSpacer.setWidth("1%");
-        titleHeader.setWidth("12%");
-        spacingHeader.setWidth("67%");
-        checkBoxHeader.setWidth("20%");
+        spacingHeader.setWidth("76%");
+        setVerticalComponentAlignment(FlexComponent.Alignment.CENTER,
+                titleHeader);
+        setVerticalComponentAlignment(FlexComponent.Alignment.CENTER,
+                checkBoxHeader);
+        //checkBoxHeader.setWidth("20%");
 
-        H3 mainTitle = new H3("Burgerfield v0.95");
+
+        mainTitle = new H3("Burgerfield v1.0");
 
         titleHeader.add(mainTitle);
         add(titleSpacer, titleHeader, spacingHeader, checkBoxHeader);
@@ -62,7 +80,6 @@ public class MainHeader extends HorizontalLayout {
 
         burgerSpotCheckbox.addValueChangeListener(event -> {
             showBurgers = burgerSpotCheckbox.getValue();
-            System.out.println(burgerSpotCheckbox.getValue());
             mainView.refreshWithNewData(this);
         });
 
@@ -71,7 +88,6 @@ public class MainHeader extends HorizontalLayout {
         restaurantCheckBox.setValue(false);
 
         restaurantCheckBox.addValueChangeListener(event -> {
-            System.out.println(restaurantCheckBox.getValue());
             showRestaurants = restaurantCheckBox.getValue();
             mainView.refreshWithNewData(this);
 
@@ -81,7 +97,6 @@ public class MainHeader extends HorizontalLayout {
 
         return checkBoxHolder;
     }
-
 
 
 }

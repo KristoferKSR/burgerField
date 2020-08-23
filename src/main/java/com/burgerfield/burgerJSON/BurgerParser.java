@@ -43,7 +43,6 @@ public class BurgerParser {
     private java.util.List<Item> tokenizeImages(String output) {
 
         ObjectMapper mapper = new ObjectMapper();
-        System.out.println(output);
 
         try {
             //Smaller response than the venues, broke it down earlier
@@ -54,7 +53,7 @@ public class BurgerParser {
                     .getJSONArray("items");
 
             String jsonInString = photos.toString();
-            System.out.println(jsonInString);
+
             return mapper.readValue(jsonInString, new TypeReference<List<Item>>() {
             });
 
@@ -122,9 +121,6 @@ public class BurgerParser {
         }
 
         while (true) {
-            // If the first token is the start of object
-            // the response contains only one object (no array)
-            // do not try to get the first object from array.
             try {
                 if (!JsonToken.START_OBJECT.equals(token)) {
                     token = parser.nextToken();
@@ -133,7 +129,6 @@ public class BurgerParser {
                     break;
                 }
                 JSONResponse node = mapper.readValue(parser, JSONResponse.class);
-                System.out.println(node.getResponse().getVenues());
                 return (node.getResponse().getVenues());
 
             } catch (JsonParseException e) {

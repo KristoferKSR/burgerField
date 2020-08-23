@@ -1,5 +1,6 @@
 package com.burgerfield.burgerJSON;
 
+import com.burgerfield.objects.burgerphoto.Item;
 import com.burgerfield.objects.burgervenue.Venue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -19,10 +20,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class BurgerRecognizer {
 
@@ -40,7 +39,6 @@ public class BurgerRecognizer {
 
             //Probably could've found a better way to make the JSON readable, but I did what I could with the time given
             String correctParams = params.toString().replace("=", ":");
-            System.out.println(correctParams);
             URL url = new URL(API_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -73,6 +71,18 @@ public class BurgerRecognizer {
         }
 
 
+    }
+
+    public String getImagePostedDateByLink(List<Item> images, String burgerImageLink) {
+        //A slightly wasteful way to check if the image has a date with it
+        for (Item image : images) {
+            if (image.getCheckin() != null && image.getCreatedAt() > 0 && burgerImageLink.contains(image.getSuffix())) {
+                long milliSeconds = image.getCreatedAt() * 1000L;
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy, HH:mm", new Locale("ee", "EE"));
+                return formatter.format(new Date(milliSeconds));
+            }
+        }
+        return null;
     }
 
 }
