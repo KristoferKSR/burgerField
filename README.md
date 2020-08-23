@@ -21,6 +21,7 @@ Materials, dependencies and websites used:
 * Jackson
 * Foursquare API
 * Qminder Burger Image Recognition service
+* Countless Stack Overflow questions and answers
 
 ## Meta
 
