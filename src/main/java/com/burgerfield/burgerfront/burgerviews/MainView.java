@@ -19,10 +19,11 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.dom.ThemeList;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.server.WebBrowser;
+import com.vaadin.flow.server.*;
 import com.vaadin.flow.theme.material.Material;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,13 +32,16 @@ import java.util.*;
 import java.util.List;
 
 @Route
-public class MainView extends Div {
+@PageTitle("Burgerfield v0.95")
+public class MainView extends Div implements PageConfigurator {
 
+    //Currently the messiest class, needs some refactoring
     private final MapLocationService service;
     BurgerParser burgerParser = new BurgerParser();
     BurgerRecognizer burgerRecognizer = new BurgerRecognizer();
     List<Venue> burgerSpots = new ArrayList<>();
 
+    //Queries for Foursquare, this is the categoryId
     private static final String BURGER_QUERY = "4bf58dd8d48988d16c941735";
     private static final String AMERICAN_RESTAURANT_QUERY = "4bf58dd8d48988d14e941735";
     private static final String FOOD_TRUCK_QUERY = "4bf58dd8d48988d1cb941735";
@@ -75,20 +79,15 @@ public class MainView extends Div {
         mainHeader.setWidth("100%");
         mainHeader.setHeight("10%");
 
-        // Instantiate layouts
         content = new VerticalLayout();
         center = new HorizontalLayout();
         HorizontalLayout footer = new HorizontalLayout();
-
-        // Configure layouts
         venueNavbar = new VenueNavbar(service);
-
         refreshWithNewData(mainHeader);
 
         center.setWidth("100%");
         center.setPadding(true);
         center.setSpacing(true);
-
         content.setWidth("100%");
         footer.setWidth("100%");
         footer.setHeight("10%");
@@ -112,6 +111,7 @@ public class MainView extends Div {
         setVisualStyle(light, footer, workspace, venueNavbar, mainHeader);
     }
 
+    //currently unused, might implement
     public  boolean isMobileDevice() {
         WebBrowser webBrowser = VaadinSession.getCurrent().getBrowser();
         return webBrowser.isAndroid() || webBrowser.isIPhone() || webBrowser.isWindowsPhone();
@@ -163,7 +163,6 @@ public class MainView extends Div {
     void generateVenuePopUp(Venue burgerSpot) {
 
         H3 title = new H3(burgerSpot.getName());
-
         VerticalLayout imageHolder = new VerticalLayout();
         List<String> imageLinks = new ArrayList<>();
         List<Item> images = burgerParser.getBurgerImageData(burgerSpot.getId());
@@ -178,6 +177,7 @@ public class MainView extends Div {
             images.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
             setImage(images, imageLinks, imageHolder);
         } else {
+            //incase there's an error in the JSON, sometimes happens with some Tallinn spots
             Notification notification = new Notification("Faulty JSON, moving on...", 3000);
             add(notification);
             notification.open();
@@ -200,6 +200,7 @@ public class MainView extends Div {
     private void setImage(List<Item> images, List<String> imageLinks, VerticalLayout imageHolder) {
 
         for (Item testImage : images) {
+            //constructing the image links for the Qminder API
             String imageLinkString = testImage.getPrefix() + "300x300" + testImage.getSuffix();
             imageLinks.add(imageLinkString);
         }
@@ -222,6 +223,7 @@ public class MainView extends Div {
     }
 
     private String getImagePostedDateByLink(List<Item> images, String burgerImageLink) {
+        //A slightly wasteful way to check if the image has a date with it
         for (Item image : images) {
             if (image.getCheckin() != null && image.getCreatedAt() > 0 && burgerImageLink.contains(image.getSuffix())) {
                 long milliSeconds = image.getCreatedAt() * 1000L;
@@ -332,6 +334,15 @@ public class MainView extends Div {
         }
         workspace.getStyle().set("font-family", "Courier");
         venueNavbar.getElement().getStyle().set("font-family", "Courier");
+    }
+
+    @Override
+    public void configurePage(InitialPageSettings initialPageSettings) {
+
+        HashMap<String, String> attributes = new HashMap<>();
+        attributes.put("rel", "shortcut icon");
+        attributes.put("type", "image/png");
+        initialPageSettings.addLink("icons/icon.png", attributes);
     }
 
 }

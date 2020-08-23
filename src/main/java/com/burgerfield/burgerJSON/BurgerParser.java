@@ -29,7 +29,7 @@ public class BurgerParser {
     private static final String TALLINN_COORDS = "59.43,24.75";
 
     public List<Item> getBurgerImageData(String id) {
-
+        //Could've built the string better
         String date = getDate();
         final String uri = "https://api.foursquare.com/v2/venues/" + id + "/photos?callback=jQuery17208000829075989362_" + System.currentTimeMillis() + "&oauth_token=1PWILU4QNZC2FL25NAJRINTBP51HTTKDTS2J1CTVTVJZ12BO&v=" + date + "&_=" + System.currentTimeMillis();
 
@@ -46,6 +46,7 @@ public class BurgerParser {
         System.out.println(output);
 
         try {
+            //Smaller response than the venues, broke it down earlier
             JSONObject json = new JSONObject(output);
             JSONArray photos = json
                     .getJSONObject("response")
@@ -66,19 +67,21 @@ public class BurgerParser {
     }
 
     public static String getDate() {
+        //Date for foursquare query
         long milliSeconds = System.currentTimeMillis();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
         return formatter.format(new Date(milliSeconds));
     }
 
     public List<Venue> getBurgerspots(String query, boolean isSetToTallinn) {
+        //Used resttemplate to start with, but wanted to be sure that the bigger JSON queries got parsed as a stream
         String date = getDate();
         URL url = null;
         try {
             if (isSetToTallinn)
-                url = new URL("https://api.foursquare.com/v2/venues/search?client_id=HWDO2NOD0GHFABK5DP5CL2JZNBD422RDEWOU1HMWNH2I5NTJ&client_secret=2VMJAR1GIOHL5JILAMQ4QNKOVXLE4BJEV1EZ254LRG0MGH4C&v=" + date + "&limit=1000&ll=" + TALLINN_COORDS + "&categoryId=" + query);
+                url = new URL("https://api.foursquare.com/v2/venues/search?client_id=HWDO2NOD0GHFABK5DP5CL2JZNBD422RDEWOU1HMWNH2I5NTJ&client_secret=2VMJAR1GIOHL5JILAMQ4QNKOVXLE4BJEV1EZ254LRG0MGH4C&v=" + date + "&limit=10000&ll=" + TALLINN_COORDS + "&categoryId=" + query);
             else
-                url = new URL("https://api.foursquare.com/v2/venues/search?client_id=HWDO2NOD0GHFABK5DP5CL2JZNBD422RDEWOU1HMWNH2I5NTJ&client_secret=2VMJAR1GIOHL5JILAMQ4QNKOVXLE4BJEV1EZ254LRG0MGH4C&v=" + date + "&limit=1000&ll=" + TARTU_COORDS + "&categoryId=" + query);
+                url = new URL("https://api.foursquare.com/v2/venues/search?client_id=HWDO2NOD0GHFABK5DP5CL2JZNBD422RDEWOU1HMWNH2I5NTJ&client_secret=2VMJAR1GIOHL5JILAMQ4QNKOVXLE4BJEV1EZ254LRG0MGH4C&v=" + date + "&limit=10000&ll=" + TARTU_COORDS + "&categoryId=" + query);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -119,7 +122,7 @@ public class BurgerParser {
         }
 
         while (true) {
-            // If the first token is the start of obejct ->
+            // If the first token is the start of object
             // the response contains only one object (no array)
             // do not try to get the first object from array.
             try {

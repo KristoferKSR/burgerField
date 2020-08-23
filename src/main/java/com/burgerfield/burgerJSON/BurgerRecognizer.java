@@ -29,7 +29,7 @@ public class BurgerRecognizer {
     private static final String API_URL = "https://pplkdijj76.execute-api.eu-west-1.amazonaws.com/prod/recognize";
 
     public String postImages(List<String> imageUrls) {
-
+        //Using classic HTTPUrlConnection here, had some trouble getting restTemplate working with POST
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -38,6 +38,7 @@ public class BurgerRecognizer {
             JSONArray urlArray = new JSONArray(imageUrls);
             params.put("\"urls\"", urlArray.toString());
 
+            //Probably could've found a better way to make the JSON readable, but I did what I could with the time given
             String correctParams = params.toString().replace("=", ":");
             System.out.println(correctParams);
             URL url = new URL(API_URL);

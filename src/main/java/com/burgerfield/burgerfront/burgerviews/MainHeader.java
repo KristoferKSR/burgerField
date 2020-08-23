@@ -7,6 +7,7 @@ import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 import java.util.Arrays;
@@ -41,6 +42,7 @@ public class MainHeader extends HorizontalLayout {
         titleHeader.setWidth("12%");
         spacingHeader.setWidth("67%");
         checkBoxHeader.setWidth("20%");
+
         H3 mainTitle = new H3("Burgerfield v0.95");
 
         titleHeader.add(mainTitle);
