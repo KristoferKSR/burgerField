@@ -13,6 +13,7 @@ https://burgerfield.herokuapp.com/
 Materials, dependencies and websites used:
 
 * http://www.jsonschema2pojo.org/
+* https://github.com/vaadin/vaadin-leaflet-example
 * Vaadin 14
 * Spring Boot
 * Leaflet Map
