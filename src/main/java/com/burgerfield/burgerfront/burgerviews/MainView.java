@@ -22,6 +22,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.theme.material.Material;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,6 +42,8 @@ public class MainView extends Div {
     private static final String BURGER_QUERY = "4bf58dd8d48988d16c941735";
     private static final String AMERICAN_RESTAURANT_QUERY = "4bf58dd8d48988d14e941735";
     private static final String FOOD_TRUCK_QUERY = "4bf58dd8d48988d1cb941735";
+    private static final String ALL_RESTAURANT_QUERY = "4d4b7105d754a06374d81259";
+
 
     private static final String DARK_BACKGROUND_COLOR = "#ffffff";
     private static final String LIGHT_BACKGROUND_COLOR = "#0d0d0d";
@@ -70,7 +74,7 @@ public class MainView extends Div {
         mainHeader.setUpHeader(this, isSetToTallinn);
         mainHeader.setPadding(true);
         mainHeader.setWidth("100%");
-        mainHeader.setHeight("100px");
+        mainHeader.setHeight("10%");
 
         // Instantiate layouts
         content = new VerticalLayout();
@@ -79,7 +83,8 @@ public class MainView extends Div {
 
         // Configure layouts
         venueNavbar = new VenueNavbar(service);
-        refreshWithNewData(true, false);
+
+        refreshWithNewData(mainHeader);
 
         center.setWidth("100%");
         center.setPadding(true);
@@ -87,6 +92,7 @@ public class MainView extends Div {
 
         content.setWidth("100%");
         footer.setWidth("100%");
+        footer.setHeight("10%");
 
         // Compose layout
         center.setFlexGrow(1, venueNavbar);
@@ -103,8 +109,13 @@ public class MainView extends Div {
         footer.add(footerSpacer, visualStyleSwitchButton, footerMiddleSpacer, tallinnButton);
 
         setUpDarkLightSwitchButton(visualStyleSwitchButton, footer, workspace, mainHeader);
-        setUpTallinnButton(tallinnButton);
+        setUpTallinnButton(tallinnButton, mainHeader);
         setVisualStyle(light, footer, workspace, venueNavbar, mainHeader);
+    }
+
+    public  boolean isMobileDevice() {
+        WebBrowser webBrowser = VaadinSession.getCurrent().getBrowser();
+        return webBrowser.isAndroid() || webBrowser.isIPhone() || webBrowser.isWindowsPhone();
     }
 
     private void setUpMap() {
@@ -190,8 +201,6 @@ public class MainView extends Div {
     private void addImages(List<Item> images, List<String> imageLinks, HorizontalLayout imageRow) {
 
         for (Item testImage : images) {
-            System.out.println(testImage.getCheckin().getCreatedAt());
-            System.out.println(testImage.getSuffix());
             String imageLinkString = testImage.getPrefix() + "300x300" + testImage.getSuffix();
             imageLinks.add(imageLinkString);
         }
@@ -210,7 +219,9 @@ public class MainView extends Div {
 
     }
 
-    public void refreshWithNewData(boolean showBurgers, boolean showRestaurants) {
+    public void refreshWithNewData(MainHeader mainHeader) {
+        boolean showBurgers = mainHeader.showBurgers;
+        boolean showRestaurants = mainHeader.showRestaurants;
         venueNavbar.removeAll();
         center.removeAll();
         content.removeAll();
@@ -229,27 +240,30 @@ public class MainView extends Div {
             burgerSpots = burgerParser.getBurgerspots(AMERICAN_RESTAURANT_QUERY, isSetToTallinn);
 
         // if (!isSetToTallinn) map.setMiddle();
+
         venueNavbar.setUpNavBar(map, burgerSpots, this);
-        venueNavbar.setWidth("365px");
-        venueNavbar.setMaxHeight("800px");
+        venueNavbar.setMaxWidth("20%");
+        venueNavbar.setMaxHeight("700px");
         center.add(venueNavbar, content);
-        center.setMaxHeight("800px");
-        content.setHeight("800px");
+        center.setMaxHeight("65%");
+        content.setHeight("700px");
         content.add(map);
+
+
 
     }
 
-    private void setUpTallinnButton(Button tallinnButton) {
+    private void setUpTallinnButton(Button tallinnButton, MainHeader mainHeader) {
         tallinnButton.addClickListener(e -> {
 
             if (!isSetToTallinn) {
                 MapLocation tallinnLocation = new MapLocation(59.436962, 24.753574, "Tallinn");
                 map.panToLocation(tallinnLocation);
-                switchToTallinn();
+                switchToTallinn(mainHeader);
                 tallinnButton.setText("Go back");
             } else {
                 MapLocation tartuLocation = new MapLocation(58.378025, 26.728493, "Tallinn");
-                switchToTartu();
+                switchToTartu(mainHeader);
                 map.panToLocation(tartuLocation);
                 tallinnButton.setText("Try Tallinn?");
 
@@ -271,16 +285,16 @@ public class MainView extends Div {
         });
     }
 
-    private void switchToTallinn() {
+    private void switchToTallinn(MainHeader mainHeader) {
         isSetToTallinn = true;
         showTallinnText();
-        refreshWithNewData(true, false);
+        refreshWithNewData(mainHeader);
     }
 
-    private void switchToTartu() {
+    private void switchToTartu(MainHeader mainHeader) {
         isSetToTallinn = false;
 
-        refreshWithNewData(true, false);
+        refreshWithNewData(mainHeader);
     }
 
     private void setVisualStyle(boolean light, HorizontalLayout footer, VerticalLayout workspace, VenueNavbar venueNavbar, MainHeader header) {

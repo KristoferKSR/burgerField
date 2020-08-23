@@ -41,7 +41,7 @@ public class MainHeader extends HorizontalLayout {
         titleHeader.setWidth("12%");
         spacingHeader.setWidth("67%");
         checkBoxHeader.setWidth("20%");
-        H3 mainTitle = new H3("Burgerfield v0.9");
+        H3 mainTitle = new H3("Burgerfield v0.95");
 
         titleHeader.add(mainTitle);
         add(titleSpacer, titleHeader, spacingHeader, checkBoxHeader);
@@ -61,7 +61,7 @@ public class MainHeader extends HorizontalLayout {
         burgerSpotCheckbox.addValueChangeListener(event -> {
             showBurgers = burgerSpotCheckbox.getValue();
             System.out.println(burgerSpotCheckbox.getValue());
-            mainView.refreshWithNewData(showBurgers, showRestaurants);
+            mainView.refreshWithNewData(this);
         });
 
         Checkbox restaurantCheckBox = new Checkbox();
@@ -71,7 +71,7 @@ public class MainHeader extends HorizontalLayout {
         restaurantCheckBox.addValueChangeListener(event -> {
             System.out.println(restaurantCheckBox.getValue());
             showRestaurants = restaurantCheckBox.getValue();
-            mainView.refreshWithNewData(showBurgers, showRestaurants);
+            mainView.refreshWithNewData(this);
 
         });
 

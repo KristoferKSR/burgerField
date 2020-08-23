@@ -3,6 +3,7 @@ package com.burgerfield.burgerfront;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 
 import com.vaadin.flow.component.ComponentEvent;
@@ -62,8 +63,11 @@ public class LeafletMap extends PolymerTemplate<TemplateModel> implements HasSiz
     private static final String CUSTOM_LAYER_1 = "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png";
     private static final String CUSTOM_LAYER_2 = "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png";
     private static final String OPEN_STREET_MAP_ATTRIBUTION = "Qminder burger app";
-    private static final String HAS_BURGER_ICON = "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/burger-icon.png";
-    private static final String HAS_OTHER_ICON = "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/tacos-icon.png";
+    private static final String[] HAS_BURGER_ICONS = {"https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/hunberger-3-icon.png",
+            "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/hunberger-4-icon.png", "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/fresh-b-icon.png",
+    "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/cheese-b-icon.png", "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/baconlettuce-b-icon.png",
+    "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/burger-icon.png", "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/fridchicken-b-icon.png"};
+    private static final String HAS_OTHER_ICON = "https://icons.iconarchive.com/icons/iconmuseo/fast-food/32/set-2-icon.png";
 
 
     /**
@@ -130,8 +134,9 @@ public class LeafletMap extends PolymerTemplate<TemplateModel> implements HasSiz
     public void addMarker(MapLocation spot, boolean isBurgerSpot) {
         // save id for later use in events
         idToMarker.put(nextMarkerId, spot);
-        String iconUrl = HAS_BURGER_ICON;
-        if (isBurgerSpot) iconUrl = HAS_BURGER_ICON;
+        int rnd = new Random().nextInt(HAS_BURGER_ICONS.length);
+        String iconUrl = HAS_BURGER_ICONS[rnd];
+        if (isBurgerSpot) iconUrl = HAS_BURGER_ICONS[rnd];
         if (!isBurgerSpot) iconUrl = HAS_OTHER_ICON;
 
 
