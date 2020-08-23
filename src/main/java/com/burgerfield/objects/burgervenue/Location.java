@@ -13,23 +13,21 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "address",
     "lat",
     "lng",
     "labeledLatLngs",
     "distance",
-    "postalCode",
     "cc",
-    "city",
-    "state",
     "country",
     "formattedAddress",
+    "postalCode",
+    "city",
+    "state",
+    "address",
     "crossStreet"
 })
 public class Location {
 
-    @JsonProperty("address")
-    private String address;
     @JsonProperty("lat")
     private Double lat;
     @JsonProperty("lng")
@@ -38,32 +36,24 @@ public class Location {
     private List<LabeledLatLng> labeledLatLngs = null;
     @JsonProperty("distance")
     private Integer distance;
-    @JsonProperty("postalCode")
-    private String postalCode;
     @JsonProperty("cc")
     private String cc;
-    @JsonProperty("city")
-    private String city;
-    @JsonProperty("state")
-    private String state;
     @JsonProperty("country")
     private String country;
     @JsonProperty("formattedAddress")
     private List<String> formattedAddress = null;
+    @JsonProperty("postalCode")
+    private String postalCode;
+    @JsonProperty("city")
+    private String city;
+    @JsonProperty("state")
+    private String state;
+    @JsonProperty("address")
+    private String address;
     @JsonProperty("crossStreet")
     private String crossStreet;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    @JsonProperty("address")
-    public String getAddress() {
-        return address;
-    }
-
-    @JsonProperty("address")
-    public void setAddress(String address) {
-        this.address = address;
-    }
 
     @JsonProperty("lat")
     public Double getLat() {
@@ -105,16 +95,6 @@ public class Location {
         this.distance = distance;
     }
 
-    @JsonProperty("postalCode")
-    public String getPostalCode() {
-        return postalCode;
-    }
-
-    @JsonProperty("postalCode")
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
-
     @JsonProperty("cc")
     public String getCc() {
         return cc;
@@ -123,6 +103,36 @@ public class Location {
     @JsonProperty("cc")
     public void setCc(String cc) {
         this.cc = cc;
+    }
+
+    @JsonProperty("country")
+    public String getCountry() {
+        return country;
+    }
+
+    @JsonProperty("country")
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    @JsonProperty("formattedAddress")
+    public List<String> getFormattedAddress() {
+        return formattedAddress;
+    }
+
+    @JsonProperty("formattedAddress")
+    public void setFormattedAddress(List<String> formattedAddress) {
+        this.formattedAddress = formattedAddress;
+    }
+
+    @JsonProperty("postalCode")
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    @JsonProperty("postalCode")
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
     }
 
     @JsonProperty("city")
@@ -145,24 +155,14 @@ public class Location {
         this.state = state;
     }
 
-    @JsonProperty("country")
-    public String getCountry() {
-        return country;
+    @JsonProperty("address")
+    public String getAddress() {
+        return address;
     }
 
-    @JsonProperty("country")
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    @JsonProperty("formattedAddress")
-    public List<String> getFormattedAddress() {
-        return formattedAddress;
-    }
-
-    @JsonProperty("formattedAddress")
-    public void setFormattedAddress(List<String> formattedAddress) {
-        this.formattedAddress = formattedAddress;
+    @JsonProperty("address")
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     @JsonProperty("crossStreet")

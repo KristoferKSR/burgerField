@@ -19,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,27 +28,28 @@ public class BurgerRecognizer {
 
     private static final String API_URL = "https://pplkdijj76.execute-api.eu-west-1.amazonaws.com/prod/recognize";
 
-    public String postImages(List<String> imageUrls) throws URISyntaxException, JsonProcessingException {
+    public String postImages(List<String> imageUrls) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         try {
-
             Map<String, String> params = new LinkedHashMap<>();
             JSONArray urlArray = new JSONArray(imageUrls);
             params.put("\"urls\"", urlArray.toString());
 
             String correctParams = params.toString().replace("=", ":");
             System.out.println(correctParams);
-            URL url1 = new URL(API_URL);
-            HttpURLConnection connection = (HttpURLConnection) url1.openConnection();
+            URL url = new URL(API_URL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "application/json");
             OutputStreamWriter osw = new OutputStreamWriter(connection.getOutputStream());
+
             osw.write(correctParams);
             osw.flush();
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String builtResponse = "";
             String line = "";
@@ -56,29 +58,19 @@ public class BurgerRecognizer {
             }
             osw.close();
             reader.close();
-            System.out.println(builtResponse);
 
             try {
                 JSONObject json = new JSONObject(builtResponse);
-
-                System.err.println(connection.getResponseCode());
-                System.err.println(connection.getResponseMessage());
-
-                System.out.println("jsonstring");
-                System.out.println(json.get("urlWithBurger").toString());
                 return json.get("urlWithBurger").toString();
 
             } catch (JSONException e) {
-                //e.printStackTrace();
                 return null;
             }
 
         } catch (IOException e) {
-            //e.printStackTrace();
             return "Burgerparse error, no burgers for you...";
         }
 
-        // restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
 
     }
 

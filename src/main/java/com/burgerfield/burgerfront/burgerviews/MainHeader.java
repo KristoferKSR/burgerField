@@ -31,7 +31,6 @@ public class MainHeader extends HorizontalLayout {
         return showRestaurants;
     }
 
-
     void setUpHeader(MainView mainView, boolean isSetToTallinn) {
 
         HorizontalLayout titleSpacer = new HorizontalLayout();
@@ -43,7 +42,6 @@ public class MainHeader extends HorizontalLayout {
         spacingHeader.setWidth("67%");
         checkBoxHeader.setWidth("20%");
         H3 mainTitle = new H3("Burgerfield v0.9");
-
 
         titleHeader.add(mainTitle);
         add(titleSpacer, titleHeader, spacingHeader, checkBoxHeader);
@@ -67,7 +65,7 @@ public class MainHeader extends HorizontalLayout {
         });
 
         Checkbox restaurantCheckBox = new Checkbox();
-        restaurantCheckBox.setLabel("Restaurants");
+        restaurantCheckBox.setLabel("American restaurants");
         restaurantCheckBox.setValue(false);
 
         restaurantCheckBox.addValueChangeListener(event -> {

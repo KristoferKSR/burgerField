@@ -1,13 +1,10 @@
 package com.burgerfield.burgerfront.burgerviews;
 
-import com.burgerfield.burgerJSON.BurgerParser;
 import com.burgerfield.burgerfront.LeafletMap;
 import com.burgerfield.burgerfront.MapLocation;
 import com.burgerfield.burgerfront.MapLocationService;
 import com.burgerfield.objects.burgervenue.Venue;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -42,13 +39,11 @@ public class VenueNavbar extends VerticalLayout {
             Button venueButton = new Button(burgerSpot.getName(), new Icon(VaadinIcon.ARROW_RIGHT),
                     event -> {
                         map.panToLocation(spot);
-                        mainView.showPopup(burgerSpot);
+                        mainView.generateVenuePopUp(burgerSpot);
                     }
             );
 
             venueLayout.add(venueButton);
-            //if (burgerSpot.getLocation() != null) venueLayout.add(new Label(burgerSpot.getLocation().getAddress()));
-            //venueLayout.add(new Label(burgerSpot.getCategories().get(0).getName()));
             add(venueLayout);
         }
 
