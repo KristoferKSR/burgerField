@@ -10,7 +10,6 @@ import com.burgerfield.objects.burgervenue.Venue;
 import com.burgerfield.objects.burgerphoto.Item;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -27,7 +26,7 @@ import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.theme.material.Material;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.net.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -135,12 +134,12 @@ public class MainView extends Div {
     }
 
     private void showIntro() {
-        H3 title = new H3("Welcome to the Burgerfield Tartu");
+        H3 title = new H3("Welcome to the Burgerfield app");
         Span subtitle = new Span("You can find the newest burgers from your favourite burger spots by...");
         Span subtitleA = new Span("a) Clicking on an icon on the map");
-        Span subtitleC = new Span("b) Clicking on the name in the navbar");
+        Span subtitleB = new Span("b) Clicking on the name in the navbar");
         Button ok = new Button("OK!", VaadinIcon.CHECK.create());
-        VerticalLayout titleLayout = new VerticalLayout(title, subtitle, subtitleA, subtitleC, ok);
+        VerticalLayout titleLayout = new VerticalLayout(title, subtitle, subtitleA, subtitleB, ok);
         titleLayout.setPadding(false);
 
         Dialog introDialog = new Dialog(titleLayout);
@@ -165,7 +164,7 @@ public class MainView extends Div {
 
         H3 title = new H3(burgerSpot.getName());
 
-        HorizontalLayout imageRow = new HorizontalLayout();
+        VerticalLayout imageHolder = new VerticalLayout();
         List<String> imageLinks = new ArrayList<>();
         List<Item> images = burgerParser.getBurgerImageData(burgerSpot.getId());
 
@@ -176,8 +175,8 @@ public class MainView extends Div {
                 if (image.getCheckin() == null) image.setCheckin(zeroCheckin);
             }
 
-            images.sort((o1, o2) -> o2.getCheckin().getCreatedAt().compareTo(o1.getCheckin().getCreatedAt()));
-            addImages(images, imageLinks, imageRow);
+            images.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
+            setImage(images, imageLinks, imageHolder);
         } else {
             Notification notification = new Notification("Faulty JSON, moving on...", 3000);
             add(notification);
@@ -188,7 +187,7 @@ public class MainView extends Div {
         Span subtitle = new Span("No new burgers reported...");
         VerticalLayout titleLayout = new VerticalLayout(title, subtitle, ok);
 
-        if (imageLinks.size() > 0) titleLayout = new VerticalLayout(title, imageRow, ok);
+        if (imageLinks.size() > 0) titleLayout = new VerticalLayout(title, imageHolder, ok);
 
         titleLayout.setPadding(false);
         Dialog popupDialog = new Dialog(titleLayout);
@@ -198,7 +197,7 @@ public class MainView extends Div {
 
     }
 
-    private void addImages(List<Item> images, List<String> imageLinks, HorizontalLayout imageRow) {
+    private void setImage(List<Item> images, List<String> imageLinks, VerticalLayout imageHolder) {
 
         for (Item testImage : images) {
             String imageLinkString = testImage.getPrefix() + "300x300" + testImage.getSuffix();
@@ -210,13 +209,27 @@ public class MainView extends Div {
             if (burgerImageLink.contains("https")) {
                 Image image = new Image();
                 image.setSrc(burgerImageLink);
-                imageRow.add(image);
+                String date = getImagePostedDateByLink(images, burgerImageLink);
+                Span subtitle = new Span("Latest picture of a burger at this venue:");
+                if (date != null) subtitle = new Span("Latest picture of a burger at this venue ("+date+"):");
+                imageHolder.add(subtitle, image);
             } else {
                 Span subtitle = new Span("No new burgers reported...");
-                imageRow.add(subtitle);
+                imageHolder.add(subtitle);
             }
         }
 
+    }
+
+    private String getImagePostedDateByLink(List<Item> images, String burgerImageLink) {
+        for (Item image : images) {
+            if (image.getCheckin() != null && image.getCreatedAt() > 0 && burgerImageLink.contains(image.getSuffix())) {
+                long milliSeconds = image.getCreatedAt() * 1000L;
+                System.out.println(milliSeconds);
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy, HH:mm", new Locale("ee", "EE"));
+                return formatter.format(new Date(milliSeconds));
+            }
+        } return null;
     }
 
     public void refreshWithNewData(MainHeader mainHeader) {
